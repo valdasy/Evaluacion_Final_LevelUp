@@ -28,7 +28,7 @@ public class CarritoEntity {
     
     // ✅ SOLUCIÓN: @JsonManagedReference evita el bucle infinito al serializar JSON
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference 
+    @JsonManagedReference
     private List<ItemCarritoEntity> items = new ArrayList<>();
     
     @Column(nullable = false, precision = 10, scale = 2)
