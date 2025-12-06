@@ -4,16 +4,10 @@ import authService from "../services/authService";
 
 const CarritoContext = createContext();
 
-export const useCarrito = () => {
-  const context = useContext(CarritoContext);
-  if (!context) {
-    throw new Error("useCarrito debe ser usado dentro de CarritoProvider");
-  }
-  return context;
-};
+export const useCarrito = () => useContext(CarritoContext);
 
 export const CarritoProvider = ({ children }) => {
-  // Inicializamos carrito. Si no hay login, buscamos en localStorage.
+  // 1. Inicialización inteligente: Si no hay login, busca en localStorage
   const [carrito, setCarrito] = useState(() => {
     if (!authService.isAuthenticated()) {
       const saved = localStorage.getItem("carrito_invitado");
@@ -25,197 +19,97 @@ export const CarritoProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Efecto: Cargar carrito de BD si el usuario se loguea
   useEffect(() => {
-    if (authService.isAuthenticated()) {
-      cargarCarrito();
-    }
-    // eslint-disable-next-line
+    if (authService.isAuthenticated()) cargarCarrito();
   }, []);
 
-  // --- FUNCIONES AUXILIARES PARA INVITADOS ---
-  const guardarCarritoLocal = (items) => {
-    // Calculamos el total localmente
-    const total = items.reduce((acc, item) => {
-        return acc + (item.producto.precio * item.cantidad);
-    }, 0);
-
-    const carritoLocal = { items, total };
-    localStorage.setItem("carrito_invitado", JSON.stringify(carritoLocal));
-    setCarrito(carritoLocal);
+  // --- FUNCIONES INTERNAS ---
+  const guardarLocal = (items) => {
+    // Calculamos total localmente para invitados
+    const total = items.reduce((sum, item) => sum + (item.producto.precio * item.cantidad), 0);
+    const cart = { items, total };
+    localStorage.setItem("carrito_invitado", JSON.stringify(cart));
+    setCarrito(cart);
   };
 
-  // --- ACCIONES ---
-
+  // --- ACCIONES PÚBLICAS ---
   const cargarCarrito = async () => {
     try {
       setLoading(true);
-      const carritoData = await carritoService.obtenerCarrito();
-      setCarrito(carritoData);
-      setError(null);
+      const data = await carritoService.obtenerCarrito();
+      setCarrito(data);
     } catch (err) {
-      console.error("Error al cargar carrito:", err);
-      // Si falla la carga del backend, no borramos el estado, solo mostramos error
-      setError("No se pudo cargar el carrito del servidor");
+      console.error(err);
+      setCarrito({ items: [], total: 0 }); // Fallback seguro
     } finally {
       setLoading(false);
     }
   };
 
-  // IMPORTANTE: Ahora recibimos el OBJETO producto completo, no solo el ID
+  // ✅ AQUÍ ESTÁ LA MAGIA: Acepta invitados
   const agregarProducto = async (producto, cantidad = 1) => {
-    // 1. Lógica para USUARIO LOGUEADO
+    // A. USUARIO LOGUEADO -> API
     if (authService.isAuthenticated()) {
       try {
         setLoading(true);
-        // Al servicio le mandamos solo el ID como siempre
-        const carritoActualizado = await carritoService.agregarProducto(
-          producto.id,
-          cantidad
-        );
-        setCarrito(carritoActualizado);
-        setError(null);
-        return carritoActualizado;
+        const data = await carritoService.agregarProducto(producto.id, cantidad);
+        setCarrito(data);
       } catch (err) {
-        console.error("Error API:", err);
-        setError(err.message || "Error al agregar producto");
-        throw err;
+        setError("Error al agregar al servidor");
       } finally {
         setLoading(false);
       }
     } 
-    
-    // 2. Lógica para INVITADO (Local Storage)
+    // B. INVITADO -> LOCALSTORAGE
     else {
-      const itemsActuales = carrito?.items ? [...carrito.items] : [];
-      const index = itemsActuales.findIndex(i => i.producto.id === producto.id);
-
+      const items = carrito?.items ? [...carrito.items] : [];
+      const index = items.findIndex(i => i.producto.id === producto.id);
+      
       if (index >= 0) {
-        // El producto ya existe, sumamos cantidad
-        itemsActuales[index].cantidad += cantidad;
-        // Recalculamos subtotal visual
-        itemsActuales[index].subtotal = itemsActuales[index].cantidad * producto.precio;
+        items[index].cantidad += cantidad;
+        items[index].subtotal = items[index].cantidad * producto.producto.precio;
       } else {
-        // Producto nuevo
-        itemsActuales.push({
-          id: Date.now(), // ID temporal para el item
-          producto: producto, // Guardamos toda la info para mostrar foto/nombre
+        items.push({
+          id: Date.now(), // ID temporal
+          producto: producto, // Guardamos TODO el objeto para la foto/precio
           cantidad: cantidad,
           precioUnitario: producto.precio,
           subtotal: producto.precio * cantidad
         });
       }
-      guardarCarritoLocal(itemsActuales);
-    }
-  };
-
-  const actualizarCantidad = async (itemId, cantidad) => {
-    // 1. USUARIO LOGUEADO
-    if (authService.isAuthenticated()) {
-      try {
-        setLoading(true);
-        const carritoActualizado = await carritoService.actualizarCantidad(
-          itemId,
-          cantidad
-        );
-        setCarrito(carritoActualizado);
-      } catch (err) {
-        console.error("Error API:", err);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    } 
-    
-    // 2. INVITADO
-    else {
-      // Nota: itemId aquí puede ser el ID del producto o el ID temporal
-      const itemsActuales = [...carrito.items];
-      // Buscamos por ID de item temporal o ID de producto si coincide
-      const index = itemsActuales.findIndex(i => i.id === itemId || i.producto.id === itemId);
-
-      if (index >= 0) {
-        if (cantidad <= 0) {
-            itemsActuales.splice(index, 1);
-        } else {
-            itemsActuales[index].cantidad = cantidad;
-            itemsActuales[index].subtotal = itemsActuales[index].cantidad * itemsActuales[index].producto.precio;
-        }
-        guardarCarritoLocal(itemsActuales);
-      }
-    }
-  };
-
-  const eliminarItem = async (itemId) => {
-    if (authService.isAuthenticated()) {
-      try {
-        setLoading(true);
-        const carritoActualizado = await carritoService.eliminarItem(itemId);
-        setCarrito(carritoActualizado);
-      } catch (err) {
-        console.error("Error API:", err);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      // INVITADO
-      const itemsActuales = carrito.items.filter(i => i.id !== itemId && i.producto.id !== itemId);
-      guardarCarritoLocal(itemsActuales);
+      guardarLocal(items);
     }
   };
 
   const vaciarCarrito = async () => {
     if (authService.isAuthenticated()) {
-      try {
-        setLoading(true);
-        await carritoService.vaciarCarrito();
-        setCarrito({ items: [], total: 0 });
-      } catch (err) {
-        console.error("Error API:", err);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
+      await carritoService.vaciarCarrito();
     } else {
-      // INVITADO
       localStorage.removeItem("carrito_invitado");
-      setCarrito({ items: [], total: 0 });
     }
+    setCarrito({ items: [], total: 0 });
   };
 
-  const limpiarCarritoContexto = () => {
-    setCarrito(null);
-    localStorage.removeItem("carrito_invitado"); // Opcional: limpiar invitado al salir
-  };
-
-  const calcularTotal = () => {
-    return carrito?.total || 0;
-  };
-
-  const obtenerCantidadTotal = () => {
-    if (!carrito || !Array.isArray(carrito.items)) return 0;
-    return carrito.items.reduce(
-      (total, item) => total + (item.cantidad || 0),
-      0
-    );
+  const eliminarItem = async (itemId) => {
+    if (authService.isAuthenticated()) {
+      const data = await carritoService.eliminarItem(itemId);
+      setCarrito(data);
+    } else {
+      // Para invitados, el itemId puede ser el ID del producto o el temporal
+      const items = carrito.items.filter(i => i.id !== itemId && i.producto.id !== itemId);
+      guardarLocal(items);
+    }
   };
 
   const value = {
     carrito,
-    loading,
-    error,
     agregarProducto,
-    actualizarCantidad,
-    eliminarItem,
     vaciarCarrito,
-    cargarCarrito,
-    calcularTotal,
-    obtenerCantidadTotal,
-    limpiarCarritoContexto,
+    eliminarItem,
+    obtenerCantidadTotal: () => carrito?.items?.reduce((acc, i) => acc + i.cantidad, 0) || 0,
+    calcularTotal: () => carrito?.total || 0,
+    loading
   };
 
-  return (
-    <CarritoContext.Provider value={value}>{children}</CarritoContext.Provider>
-  );
+  return <CarritoContext.Provider value={value}>{children}</CarritoContext.Provider>;
 };

@@ -1,165 +1,121 @@
-import { useState } from "react";
-import { Form, Button } from "react-bootstrap";
-import {
-  validateEmail,
-  isOver18,
-  validatePassword,
-} from "../../utils/validators";
-import authService from "../../services/authService";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import authService from '../../services/authService';
+import './RegisterForm.css'; // Asegúrate de tener este CSS o bórralo
 
-export default function RegisterForm({ onSuccess }) {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    birthDate: "",
+const RegisterForm = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    nombre: '',
+    username: '', // Muchos backends piden esto
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState(null);
+  const [error, setError] = useState('');
 
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  };
-
-  const validate = () => {
-    const e = {};
-    if (!form.name.trim()) e.name = "Nombre requerido";
-    if (!validateEmail(form.email)) e.email = "Email inválido";
-    if (!validatePassword(form.password)) e.password = "Contraseña inválida";
-    if (form.password !== form.confirmPassword)
-      e.confirmPassword = "Las contraseñas no coinciden";
-    if (!isOver18(form.birthDate)) e.birthDate = "Debes ser mayor de 18 años";
-    setErrors(e);
-    return Object.keys(e).length === 0;
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setServerError(null);
-    if (!validate()) return;
+    setError('');
 
-    setLoading(true);
+    if (formData.password !== formData.confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+
     try {
-      // Separar nombre y apellido del campo name
-      const nombreCompleto = form.name.trim().split(" ");
-      const nombre = nombreCompleto[0] || "";
-      const apellido = nombreCompleto.slice(1).join(" ") || "";
-
-      const registroData = {
-        nombre: nombre,
-        apellido: apellido,
-        email: form.email,
-        password: form.password,
-        fechaNacimiento: form.birthDate,
-        telefono: "",
-        direccion: "",
+      // ✅ LIMPIEZA DE DATOS: Preparamos solo lo que Java quiere
+      const datosParaEnviar = {
+        nombre: formData.nombre,
+        email: formData.email,
+        password: formData.password,
+        username: formData.username || formData.email.split('@')[0] // Generar username si está vacío
       };
 
-      const data = await authService.register(registroData);
+      console.log("Enviando al backend:", datosParaEnviar); // Para depurar
 
-      // Notificar al padre (AuthPage) que el registro fue exitoso
-      onSuccess?.(data);
+      await authService.register(datosParaEnviar);
+      
+      // Si pasa, redirigimos al login
+      alert("¡Cuenta creada con éxito! Ahora inicia sesión.");
+      navigate('/auth'); // O donde tengas el login
     } catch (err) {
-      const msg =
-        typeof err === "string" ? err : err.message || "Error al registrarse";
-      setServerError(msg);
-    } finally {
-      setLoading(false);
+      console.error("Error de registro:", err);
+      // Intentamos mostrar el mensaje exacto del servidor si existe
+      setError(err.response?.data || "Error al registrar. Verifica los datos.");
     }
   };
 
   return (
-    <Form onSubmit={handleSubmit} noValidate>
-      {serverError && (
-        <div className="alert alert-danger mb-3">{serverError}</div>
-      )}
-
-      <Form.Group className="mb-3">
-        <Form.Label htmlFor="name">Nombre Completo</Form.Label>
-        <Form.Control
-          id="name"
-          name="name"
-          value={form.name}
-          onChange={onChange}
-          isInvalid={!!errors.name}
-          placeholder="Ej: Juan Pérez"
+    <form onSubmit={handleSubmit} className="register-form">
+      {error && <div className="alert-error">{error}</div>}
+      
+      <div className="form-group">
+        <label>Nombre Completo</label>
+        <input 
+          type="text" 
+          name="nombre" 
+          value={formData.nombre} 
+          onChange={handleChange} 
+          required 
         />
-        <Form.Control.Feedback type="invalid">
-          {errors.name}
-        </Form.Control.Feedback>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label htmlFor="email">Email</Form.Label>
-        <Form.Control
-          id="email"
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={onChange}
-          isInvalid={!!errors.email}
-          placeholder="tu@email.com"
-        />
-        <Form.Control.Feedback type="invalid">
-          {errors.email}
-        </Form.Control.Feedback>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label htmlFor="password">Contraseña</Form.Label>
-        <Form.Control
-          id="password"
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={onChange}
-          isInvalid={!!errors.password}
-          placeholder="Mínimo 6 caracteres"
-        />
-        <Form.Control.Feedback type="invalid">
-          {errors.password}
-        </Form.Control.Feedback>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label htmlFor="confirmPassword">Confirmar Contraseña</Form.Label>
-        <Form.Control
-          id="confirmPassword"
-          type="password"
-          name="confirmPassword"
-          value={form.confirmPassword}
-          onChange={onChange}
-          isInvalid={!!errors.confirmPassword}
-          placeholder="Repetir contraseña"
-        />
-        <Form.Control.Feedback type="invalid">
-          {errors.confirmPassword}
-        </Form.Control.Feedback>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label htmlFor="birthDate">Fecha de Nacimiento</Form.Label>
-        <Form.Control
-          id="birthDate"
-          type="date"
-          name="birthDate"
-          value={form.birthDate}
-          onChange={onChange}
-          isInvalid={!!errors.birthDate}
-        />
-        <Form.Control.Feedback type="invalid">
-          {errors.birthDate}
-        </Form.Control.Feedback>
-      </Form.Group>
-
-      <div className="d-grid">
-        <Button type="submit" variant="primary" disabled={loading}>
-          {loading ? "Registrando..." : "Registrarse"}
-        </Button>
       </div>
-    </Form>
+
+      <div className="form-group">
+        <label>Nombre de Usuario</label>
+        <input 
+          type="text" 
+          name="username" 
+          value={formData.username} 
+          onChange={handleChange} 
+          required 
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Email</label>
+        <input 
+          type="email" 
+          name="email" 
+          value={formData.email} 
+          onChange={handleChange} 
+          required 
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Contraseña</label>
+        <input 
+          type="password" 
+          name="password" 
+          value={formData.password} 
+          onChange={handleChange} 
+          required 
+          minLength="6"
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Confirmar Contraseña</label>
+        <input 
+          type="password" 
+          name="confirmPassword" 
+          value={formData.confirmPassword} 
+          onChange={handleChange} 
+          required 
+        />
+      </div>
+
+      <button type="submit" className="btn-submit">Registrarse</button>
+    </form>
   );
-}
+};
+
+export default RegisterForm;

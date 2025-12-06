@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import authService from "../services/authService";
+import api from "../services/api"; // ✅ Importamos la conexión real
 import { useCarrito } from "../context/CarritoContext";
 import "./OrdersPage.css";
 
@@ -16,23 +17,22 @@ export default function OrdersPage({ onLogout }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    loadOrders();
-  }, []);
+    if (user) {
+      loadOrders();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
 
   const loadOrders = async () => {
     try {
-      // TODO: Llamar al backend para obtener pedidos del usuario
-      // const data = await pedidoService.getMisPedidos();
-      // setOrders(data);
-
-      // Simulación de carga
-      setTimeout(() => {
-        setOrders([]);
-        setLoading(false);
-      }, 800);
+      // ✅ LLAMADA REAL AL BACKEND
+      const response = await api.get(`/ordenes/usuario/${user.id}`);
+      setOrders(response.data);
+      setLoading(false);
     } catch (err) {
       console.error("Error cargando pedidos:", err);
-      setError("Error al cargar tus pedidos");
+      setError("No se pudieron cargar tus pedidos.");
       setLoading(false);
     }
   };
@@ -43,6 +43,7 @@ export default function OrdersPage({ onLogout }) {
       PROCESANDO: { color: "#2196f3", icon: "🔄", text: "Procesando" },
       ENVIADO: { color: "#9c27b0", icon: "🚚", text: "En camino" },
       ENTREGADO: { color: "#4caf50", icon: "✅", text: "Entregado" },
+      COMPLETADA: { color: "#4caf50", icon: "✅", text: "Completada" }, // ✅ Estado que usamos en el backend
       CANCELADO: { color: "#f44336", icon: "❌", text: "Cancelado" },
     };
     return statusConfig[status] || statusConfig["PENDIENTE"];
@@ -143,7 +144,7 @@ export default function OrdersPage({ onLogout }) {
               <div className="orders-list">
                 {orders.map((order) => {
                   const statusConfig = getStatusConfig(
-                    order.status || "PENDIENTE"
+                    order.estado || "PENDIENTE"
                   );
                   return (
                     <div key={order.id} className="order-card">
@@ -169,24 +170,18 @@ export default function OrdersPage({ onLogout }) {
                           <span className="info-label">📅 Fecha</span>
                           <div className="info-value">
                             <div>
-                              {new Date(order.createdAt).toLocaleDateString(
+                              {/* ✅ Usamos fechaCreacion que viene de Java */}
+                              {new Date(order.fechaCreacion).toLocaleDateString(
                                 "es-CL"
                               )}
                             </div>
                             <small>
-                              {new Date(order.createdAt).toLocaleTimeString(
+                              {new Date(order.fechaCreacion).toLocaleTimeString(
                                 "es-CL",
                                 { hour: "2-digit", minute: "2-digit" }
                               )}
                             </small>
                           </div>
-                        </div>
-
-                        <div className="order-info-item">
-                          <span className="info-label">📦 Productos</span>
-                          <strong className="info-value">
-                            {order.items?.length || 0} items
-                          </strong>
                         </div>
 
                         <div className="order-info-item">
@@ -197,12 +192,10 @@ export default function OrdersPage({ onLogout }) {
                         </div>
 
                         <div className="order-card-actions">
-                          <Link
-                            to={`/order/${order.id}`}
-                            className="btn-view-order"
-                          >
-                            Ver detalles →
-                          </Link>
+                          {/* Botón simple por ahora */}
+                          <button className="btn-view-order" disabled>
+                            Ver detalles
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -211,30 +204,6 @@ export default function OrdersPage({ onLogout }) {
               </div>
             </>
           )}
-
-          <div className="info-cards-grid">
-            <div className="info-card">
-              <div className="info-card-icon">🚚</div>
-              <div className="info-card-content">
-                <h3>Envío Gratis</h3>
-                <p>En compras sobre $50.000</p>
-              </div>
-            </div>
-            <div className="info-card">
-              <div className="info-card-icon">🛡️</div>
-              <div className="info-card-content">
-                <h3>Compra Protegida</h3>
-                <p>Garantía de satisfacción</p>
-              </div>
-            </div>
-            <div className="info-card">
-              <div className="info-card-icon">💬</div>
-              <div className="info-card-content">
-                <h3>Soporte 24/7</h3>
-                <p>Estamos para ayudarte</p>
-              </div>
-            </div>
-          </div>
         </div>
       </main>
 
