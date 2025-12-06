@@ -1,0 +1,12 @@
+.review-card {
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-top: 2rem;
+}
+
+.star-display {
+  color: #f39c12;
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+}

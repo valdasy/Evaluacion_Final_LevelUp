@@ -1,0 +1,106 @@
+.App {
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  min-height: calc(100vh - 200px);
+}
+
+/* Resto del código existente... */
+
+.auth-form .form-control,
+.auth-form .form-select {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #2c3e50;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.auth-form .form-control:focus,
+.auth-form .form-select:focus {
+  background-color: #ffffff;
+  border-color: #3498db;
+  color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  outline: none;
+}
+
+.auth-form .form-label {
+  color: #2c3e50;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+#auth-tabs .nav-link {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #7f8c8d;
+  font-weight: 500;
+  border-radius: 0;
+  transition: all 0.3s ease;
+}
+
+#auth-tabs .nav-link.active {
+  background-color: transparent;
+  border-bottom: 2px solid #3498db;
+  color: #3498db;
+}
+
+#auth-tabs .nav-link:hover {
+  border-bottom-color: #3498db;
+  color: #3498db;
+}
+
+.referral-code-display {
+  background-color: #f8f9fa;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 2px dashed #3498db;
+  text-align: center;
+}
+
+.referral-code-display code {
+  color: #3498db;
+  font-weight: 600;
+  font-family: "Poppins", monospace;
+}
+
+.profile-container .card {
+  background-color: #f8f9fa !important;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.alert-success {
+  background-color: #d5f4e6;
+  border-color: #2ecc71;
+  color: #27ae60;
+  border-radius: 8px;
+}
+
+.alert-danger {
+  background-color: #fadbd8;
+  border-color: #e74c3c;
+  color: #c0392b;
+  border-radius: 8px;
+}
+
+.lead {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #7f8c8d;
+}
+
+.display-4 {
+  font-weight: 700;
+  letter-spacing: -1px;
+}

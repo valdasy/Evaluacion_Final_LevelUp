@@ -1,0 +1,122 @@
+.profile-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.profile-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 3rem 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar {
+  position: relative;
+}
+
+.avatar-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.profile-card {
+  border: none;
+  border-radius: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.profile-input:disabled {
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.profile-input:not(:disabled) {
+  border: 2px solid #e9ecef;
+  transition: border-color 0.3s ease;
+}
+
+.profile-input:not(:disabled):focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #212529;
+}
+
+.quick-action-btn {
+  border-width: 2px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.quick-action-btn:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+@media (max-width: 768px) {
+  .profile-hero {
+    padding: 2rem 0;
+  }
+
+  .avatar-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .profile-hero h2 {
+    font-size: 1.5rem;
+  }
+}

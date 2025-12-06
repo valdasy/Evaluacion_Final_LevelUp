@@ -1,0 +1,18 @@
+# Ignorar dependencias gigantes de Node (Frontend)
+**/node_modules/
+**/dist/
+**/build/
+npm-debug.log
+
+# Ignorar compilados de Java (Backend)
+**/target/
+**/*.class
+**/.mvn/
+**/mvnw
+**/mvnw.cmd
+
+# Ignorar archivos de sistema y entorno
+**/.DS_Store
+**/.env
+**/.vscode/
+**/.idea/

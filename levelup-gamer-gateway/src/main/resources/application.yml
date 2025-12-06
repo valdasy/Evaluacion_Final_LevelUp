@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      # --- CONFIGURACIÓN DE PERMISOS (CORS) ---
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+      # ----------------------------------------
+
+      routes:
+        - id: backend-route
+          uri: http://backend:8081
+          predicates:
+            - Path=/api/**

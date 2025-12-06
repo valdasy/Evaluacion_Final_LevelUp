@@ -1,0 +1,277 @@
+.cart-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+.cart-main h1 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+/* Carrito vacío */
+.cart-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.cart-empty p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+/* Contenido del carrito */
+.cart-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .cart-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Items del carrito */
+.cart-items {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.cart-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.btn-vaciar {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn-vaciar:hover {
+  background: #cc0000;
+}
+
+/* Item individual */
+.cart-item {
+  display: grid;
+  grid-template-columns: 100px 1fr auto auto auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.item-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.item-categoria {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.item-precio {
+  color: #4CAF50;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Cantidad */
+.item-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item-cantidad button {
+  background: #007bff;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-cantidad button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.item-cantidad button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.item-cantidad span {
+  min-width: 40px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Subtotal */
+.item-subtotal {
+  text-align: right;
+}
+
+.subtotal-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.subtotal-precio {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0.25rem 0 0 0;
+}
+
+/* Botón eliminar */
+.btn-eliminar {
+  background: #ff4444;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.btn-eliminar:hover {
+  background: #cc0000;
+}
+
+/* Resumen */
+.cart-summary {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.cart-summary h2 {
+  margin: 0 0 1.5rem 0;
+  color: #333;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  color: #666;
+}
+
+.summary-divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 1rem 0;
+}
+
+.summary-total {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.btn-checkout {
+  width: 100%;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+.btn-checkout:hover {
+  background: #45a049;
+}
+
+.btn-seguir-comprando {
+  width: 100%;
+  background: white;
+  color: #007bff;
+  border: 2px solid #007bff;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.btn-seguir-comprando:hover {
+  background: #f0f8ff;
+}
+
+/* Badge del carrito en header */
+.cart-link {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: #ff4444;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+}

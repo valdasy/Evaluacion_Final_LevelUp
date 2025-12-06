@@ -1,0 +1,185 @@
+.product-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .product-main {
+    flex: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+  }
+  
+  .product-main h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+  
+  /* Filtro de categorías */
+  .categorias-filter {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .categorias-filter button {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #007bff;
+    background: white;
+    color: #007bff;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+  
+  .categorias-filter button:hover {
+    background: #007bff;
+    color: white;
+  }
+  
+  .categorias-filter button.active {
+    background: #007bff;
+    color: white;
+  }
+  
+  /* Grid de productos */
+  .productos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  /* Tarjeta de producto */
+  .producto-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .producto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+  
+  .producto-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .producto-card h3 {
+    margin: 0.5rem 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .categoria {
+    color: #007bff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0.25rem 0;
+  }
+  
+  .descripcion {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+    flex: 1;
+  }
+  
+  .producto-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+  }
+  
+  .precio {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4CAF50;
+  }
+  
+  .stock {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .badge-destacado {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ff4444;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  
+  .btn-ver-mas {
+    display: block;
+    text-align: center;
+    padding: 0.75rem;
+    background: white;
+    color: #007bff;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s;
+  }
+  
+  .btn-ver-mas:hover {
+    background: #007bff;
+    color: white;
+  }
+  
+  .btn-agregar {
+    width: 100%;
+    padding: 0.75rem;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .btn-agregar:hover:not(:disabled) {
+    background: #45a049;
+  }
+  
+  .btn-agregar:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .loading, .error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+  }
+  
+  .error {
+    color: #ff4444;
+  }
+  
